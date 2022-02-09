@@ -50,7 +50,10 @@ class MyPromise {
       // 如果状态为解决，则放回值
       onFulfilled(this.value)
     } else if (this.status === REJECTED) {
+      // 如果状态为拒绝，则返回拒绝的原因
       onRejected(this.reason)
     }
   }
 }
+
+module.exports = MyPromise
