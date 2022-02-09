@@ -1,3 +1,8 @@
+// 定义三个状态
+const PENDING = 'pending'
+const FULFILLED = 'fulfilled'
+const REJECTED = 'rejected'
+
 // 新建 MyPromise类
 class MyPromise {
   constructor(executor) {
@@ -6,10 +11,21 @@ class MyPromise {
     executor(this.resolve, this.reject)
   }
 
+  // 存储初始状态为pending
+  status = PENDING
+
+  // 成功之后的值
+  value = null
+
+  // 失败后的原因
+  reason = null
+
   // 为什么要使用箭头函数
   // 使用箭头函数可以让函数的this指向当前实例
   // 解决后的状态
-  resolve = () => {}
+  resolve = () => {
+    if(this.status)
+  }
 
   // 拒绝后的状态
   reject = () => {}

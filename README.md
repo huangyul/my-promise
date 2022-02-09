@@ -1,2 +1,3 @@
 # my-promise
-手写promise
+
+手写 promise
