@@ -23,10 +23,24 @@ class MyPromise {
   // 为什么要使用箭头函数
   // 使用箭头函数可以让函数的this指向当前实例
   // 解决后的状态
-  resolve = () => {
-    if(this.status)
+  resolve = (value) => {
+    // 只有状态为等待，才执行状态修改
+    if (this.status === PENDING) {
+      // 状态修改为解决
+      this.status = FULFILLED
+      // 保存成功之后的值
+      this.value = value
+    }
   }
 
   // 拒绝后的状态
-  reject = () => {}
+  reject = (reason) => {
+    // 只有状态为等待，才执行状态修改
+    if (this.status === PENDING) {
+      // 状态修改为拒绝
+      this.status = REJECTED
+      // 保存拒绝的原因
+      this.reason = reason
+    }
+  }
 }
