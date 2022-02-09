@@ -43,4 +43,14 @@ class MyPromise {
       this.reason = reason
     }
   }
+
+  then(onFulfilled, onRejected) {
+    // 判断状态
+    if (this.status === FULFILLED) {
+      // 如果状态为解决，则放回值
+      onFulfilled(this.value)
+    } else if (this.status === REJECTED) {
+      onRejected(this.reason)
+    }
+  }
 }
