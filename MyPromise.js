@@ -136,6 +136,26 @@ class MyPromise {
     })
     return promise2
   }
+
+  // resolve静态方法
+  static resolve(paramter) {
+    // 如果传入是MyPromise就直接返回
+    if (paramter instanceof MyPromise) {
+      return paramter
+    }
+
+    // 转成常规方式
+    return new MyPromise((resolve) => {
+      resolve(paramter)
+    })
+  }
+
+  // reject静态方法
+  static reject(reason) {
+    return new MyPromise((resolve, reject) => {
+      reject(reason)
+    })
+  }
 }
 
 function resolvePromise(promise, x, resolve, reject) {
