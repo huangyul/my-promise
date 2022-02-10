@@ -6,9 +6,14 @@ const REJECTED = 'rejected'
 // 新建 MyPromise类
 class MyPromise {
   constructor(executor) {
-    // executor 是一个执行器，进入会立即执行
-    // 执行resolve和reject
-    executor(this.resolve, this.reject)
+    try {
+      // executor 是一个执行器，进入会立即执行
+      // 执行resolve和reject
+      executor(this.resolve, this.reject)
+    } catch (err) {
+      // 如果有错误立即捕获
+      this.reject(err)
+    }
   }
 
   // 存储初始状态为pending
@@ -71,11 +76,15 @@ class MyPromise {
       if (this.status === FULFILLED) {
         // 创建微任务，要等promise2创建完再统一处理
         queueMicrotask(() => {
-          // 如果状态为解决，则放回值
-          const x = onFulfilled(this.value)
+          try {
+            // 如果状态为解决，则放回值
+            const x = onFulfilled(this.value)
 
-          // 统一集中处理
-          resolvePromise(promise2, x, resolve, reject)
+            // 统一集中处理
+            resolvePromise(promise2, x, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
         })
       } else if (this.status === REJECTED) {
         // 如果状态为拒绝，则返回拒绝的原因
