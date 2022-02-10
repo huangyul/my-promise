@@ -21,10 +21,12 @@ class MyPromise {
   reason = null
 
   // 存储成功回调函数
-  onFulfilledCallback = null
+  // onFulfilledCallback = null
+  onFulfilledcallbacks = []
 
   // 存储失败回调函数
-  onRejectedCallback = null
+  // onRejectedCallback = null
+  onRejectedCallbacks = []
 
   // 为什么要使用箭头函数
   // 使用箭头函数可以让函数的this指向当前实例
@@ -38,7 +40,11 @@ class MyPromise {
       this.value = value
 
       // 判断成功回调是否存在，如果存在就调用
-      this.onFulfilledCallback && this.onFulfilledCallback(value)
+      // this.onFulfilledCallback && this.onFulfilledCallback(value)
+      while (this.onFulfilledcallbacks.length) {
+        // Array.shift() 取出第一个元素，然后（）调用
+        this.onFulfilledcallbacks.shift()(this.value)
+      }
     }
   }
 
@@ -52,7 +58,9 @@ class MyPromise {
       this.reason = reason
 
       // 判断失败回调是否存在，如果存在就调用
-      this.onRejectedCallback && this.onRejectedCallback(reason)
+      while (this.onRejectedCallbacks.length) {
+        this.onRejectedCallbacks.shift()(reason)
+      }
     }
   }
 
@@ -67,8 +75,8 @@ class MyPromise {
     } else if (this.status === PENDING) {
       // 因为不知道后面状态的变化情况，所以要将成功回调和失败回调存储起来
       // 等待执行成功失败函数的时候在传递
-      this.onFulfilledCallback = onFulfilled
-      this.onRejectedCallback = onRejected
+      this.onFulfilledcallbacks.push(onFulfilled)
+      this.onRejectedCallbacks.push(onRejected)
     }
   }
 }
