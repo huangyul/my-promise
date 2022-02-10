@@ -1,7 +1,8 @@
 const MyPromise = require('./MyPromise')
 const p = new MyPromise((resolve, reject) => {
-  resolve('success')
-  reject('err')
+  setTimeout(() => {
+    resolve('success')
+  }, 2000)
 })
 
 p.then(

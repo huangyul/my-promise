@@ -20,6 +20,12 @@ class MyPromise {
   // 失败后的原因
   reason = null
 
+  // 存储成功回调函数
+  onFulfilledCallback = null
+
+  // 存储失败回调函数
+  onRejectedCallback = null
+
   // 为什么要使用箭头函数
   // 使用箭头函数可以让函数的this指向当前实例
   // 解决后的状态
@@ -30,6 +36,9 @@ class MyPromise {
       this.status = FULFILLED
       // 保存成功之后的值
       this.value = value
+
+      // 判断成功回调是否存在，如果存在就调用
+      this.onFulfilledCallback && this.onFulfilledCallback(value)
     }
   }
 
@@ -41,6 +50,9 @@ class MyPromise {
       this.status = REJECTED
       // 保存拒绝的原因
       this.reason = reason
+
+      // 判断失败回调是否存在，如果存在就调用
+      this.onRejectedCallback && this.onRejectedCallback(reason)
     }
   }
 
@@ -52,6 +64,11 @@ class MyPromise {
     } else if (this.status === REJECTED) {
       // 如果状态为拒绝，则返回拒绝的原因
       onRejected(this.reason)
+    } else if (this.status === PENDING) {
+      // 因为不知道后面状态的变化情况，所以要将成功回调和失败回调存储起来
+      // 等待执行成功失败函数的时候在传递
+      this.onFulfilledCallback = onFulfilled
+      this.onRejectedCallback = onRejected
     }
   }
 }
