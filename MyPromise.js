@@ -87,13 +87,41 @@ class MyPromise {
           }
         })
       } else if (this.status === REJECTED) {
-        // 如果状态为拒绝，则返回拒绝的原因
-        onRejected(this.reason)
+        // 创建一个微任务等待promise2完成初始化
+        queueMicrotask(() => {
+          try {
+            // 如果状态为拒绝，则返回拒绝的原因
+            const x = onRejected(this.reason)
+            resolvePromise(promise2, x, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
+        })
       } else if (this.status === PENDING) {
         // 因为不知道后面状态的变化情况，所以要将成功回调和失败回调存储起来
         // 等待执行成功失败函数的时候在传递
-        this.onFulfilledcallbacks.push(onFulfilled)
-        this.onRejectedCallbacks.push(onRejected)
+        this.onFulfilledcallbacks.push(() => {
+          queueMicrotask(() => {
+            try {
+              const x = onFulfilled(this.value)
+
+              resolvePromise(promise2, x, resolve, reject)
+            } catch (err) {
+              reject(err)
+            }
+          })
+        })
+        this.onRejectedCallbacks.push(() => {
+          queueMicrotask(() => {
+            try {
+              const x = onRejected(this.reason)
+
+              resolvePromise(promise2, x, resolve, reject)
+            } catch (err) {
+              reject(err)
+            }
+          })
+        })
       }
     })
     return promise2
