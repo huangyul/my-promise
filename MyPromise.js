@@ -70,6 +70,16 @@ class MyPromise {
   }
 
   then(onFulfilled, onRejected) {
+    // 如果不传，则使用默认函数
+    onFulfilled =
+      typeof onFulfilled === 'function' ? onFulfilled : (value) => value
+    onRejected =
+      typeof onRejected === 'function'
+        ? onRejected
+        : (reason) => {
+            throw reason
+          }
+
     // 为了链式调用，这里直接创建一个promise实例，然后return出去
     const promise2 = new MyPromise((resolve, reject) => {
       // 判断状态
