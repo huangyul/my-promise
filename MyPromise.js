@@ -66,14 +66,17 @@ class MyPromise {
 
   then(onFulfilled, onRejected) {
     // 为了链式调用，这里直接创建一个promise实例，然后return出去
-    return new MyPromise((resolve, reject) => {
+    const promise2 = new MyPromise((resolve, reject) => {
       // 判断状态
       if (this.status === FULFILLED) {
-        // 如果状态为解决，则放回值
-        const x = onFulfilled(this.value)
+        // 创建微任务，要等promise2创建完再统一处理
+        queueMicrotask(() => {
+          // 如果状态为解决，则放回值
+          const x = onFulfilled(this.value)
 
-        // 统一集中处理
-        resolvePromise(x, resolve, reject)
+          // 统一集中处理
+          resolvePromise(promise2, x, resolve, reject)
+        })
       } else if (this.status === REJECTED) {
         // 如果状态为拒绝，则返回拒绝的原因
         onRejected(this.reason)
@@ -84,10 +87,15 @@ class MyPromise {
         this.onRejectedCallbacks.push(onRejected)
       }
     })
+    return promise2
   }
 }
 
-function resolvePromise(x, resolve, reject) {
+function resolvePromise(promise, x, resolve, reject) {
+  // 如果当前的promise等于本身，则报错
+  if (promise === x) {
+    reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+  }
   // 判断x是不是MyPromise实例对象
   if (x instanceof MyPromise) {
     // 如果是promise对象，则调用then
