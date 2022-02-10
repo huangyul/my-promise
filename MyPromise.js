@@ -65,19 +65,37 @@ class MyPromise {
   }
 
   then(onFulfilled, onRejected) {
-    // 判断状态
-    if (this.status === FULFILLED) {
-      // 如果状态为解决，则放回值
-      onFulfilled(this.value)
-    } else if (this.status === REJECTED) {
-      // 如果状态为拒绝，则返回拒绝的原因
-      onRejected(this.reason)
-    } else if (this.status === PENDING) {
-      // 因为不知道后面状态的变化情况，所以要将成功回调和失败回调存储起来
-      // 等待执行成功失败函数的时候在传递
-      this.onFulfilledcallbacks.push(onFulfilled)
-      this.onRejectedCallbacks.push(onRejected)
-    }
+    // 为了链式调用，这里直接创建一个promise实例，然后return出去
+    return new MyPromise((resolve, reject) => {
+      // 判断状态
+      if (this.status === FULFILLED) {
+        // 如果状态为解决，则放回值
+        const x = onFulfilled(this.value)
+
+        // 统一集中处理
+        resolvePromise(x, resolve, reject)
+      } else if (this.status === REJECTED) {
+        // 如果状态为拒绝，则返回拒绝的原因
+        onRejected(this.reason)
+      } else if (this.status === PENDING) {
+        // 因为不知道后面状态的变化情况，所以要将成功回调和失败回调存储起来
+        // 等待执行成功失败函数的时候在传递
+        this.onFulfilledcallbacks.push(onFulfilled)
+        this.onRejectedCallbacks.push(onRejected)
+      }
+    })
+  }
+}
+
+function resolvePromise(x, resolve, reject) {
+  // 判断x是不是MyPromise实例对象
+  if (x instanceof MyPromise) {
+    // 如果是promise对象，则调用then
+    // 执行x，调用then方法，将promise的状态变为fulfilled或者rejected
+    x.then(resolve, reject)
+  } else {
+    // 普通值
+    resolve(x)
   }
 }
 
